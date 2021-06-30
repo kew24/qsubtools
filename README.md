@@ -4,8 +4,9 @@ qsubtools is a suite of shell scripts to automate PBS submissions
 
 ## qsubi
 
-qsubi automates the submission of creating and activating an interactive node 
+qsubi automates the submission of creating and activating an interactive node  
 
+```
 ------------------------------  QSUB INTERACTIVE HELP  
 ---------- PROGRAM		== qsubi (qsub interactive)
 ---------- VERSION		== 2.0
@@ -26,11 +27,13 @@ qsubi automates the submission of creating and activating an interactive node
 -------------------- EXAMPLES 
 qsubi
 qsubi -c 4 -q shortq
+```
 
 ## qsubs
 
 qsubs automates the submission of creating and activating of job submissions. qsubs will automate single and array based submissions as well as linux and R based submissions. 
 
+```
 ------------------------------  QSUB SUBMITTER HELP  
 ---------- PROGRAM		== qsubs (qsub submitter)
 ---------- VERSION		== 2.0
@@ -66,4 +69,4 @@ echo sample2 >> sample_names
 qsubs -n zip_comand -a sample_names -s "zip SAMPLE_data.zip SAMPLE_data.txt"
 echo "zip SAMPLE_data.zip SAMPLE_data.txt" > sample_script
 qsubs -n zip_script -a sample_names -s sample_script -d
-
+```
