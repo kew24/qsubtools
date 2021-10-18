@@ -9,8 +9,8 @@ qsubi automates the submission of creating and activating an interactive node
 ```
 ------------------------------  QSUB INTERACTIVE HELP  
 ---------- PROGRAM		== qsubi (qsub interactive)
----------- VERSION		== 2.0
----------- DATE			== 2020_10_20
+---------- VERSION		== 2.0.1
+---------- DATE			== 2021_10_18
 ---------- CONTACT		== lee.marshall@vai.org
 ---------- DISCRIPTION		== automates creation of PBS interactive job
 ---------- PATH			== export PATH=\$PATH:/path/to/qsubi/directory
@@ -22,6 +22,7 @@ qsubi automates the submission of creating and activating an interactive node
 ---------- OPTIONS
 	[ -c | --cores <int> ]		== number of cores per job 1 to 80, default 1 core
 	[ -n | --node <node> ]		== name of specific node, default any node
+	[ -N | --name <name> ]		== name specific to job, default STDIN
 	[ -q | --queue <name> ]		== specify queue name, default any queue
 	[ -w | --walltime <int> ]	== number of hours per job 1 to 744, default 24 hours
 -------------------- EXAMPLES 
@@ -36,8 +37,8 @@ qsubs automates the submission of creating and activating of job submissions. qs
 ```
 ------------------------------  QSUB SUBMITTER HELP  
 ---------- PROGRAM		== qsubs (qsub submitter)
----------- VERSION		== 2.0
----------- DATE			== 2020_10_20
+---------- VERSION		== 2.0.1
+---------- DATE			== 2021_10_18
 ---------- CONTACT		== lee.marshall@vai.org
 ---------- DISCRIPTION		== automates creation and submition of PBS qsub scripts
 ---------- PATH			== export PATH=\$PATH:/path/to/qsubs/directory
