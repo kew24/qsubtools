@@ -60,7 +60,7 @@ do
     -h | --help)       usage           ; shift   ;;
     -c | --cores)      CORES="$2"      ; shift 2 ;;
     -n | --node)       NODE="$2"       ; shift 2 ;;
-	-N | --name)       NAME="$2"       ; shift 2 ;;
+    -N | --name)       NAME="$2"       ; shift 2 ;;
     -q | --queue)      QUEUE="$2"      ; shift 2 ;;
     -w | --walltime)   WALLTIME="$2"   ; shift 2 ;;
     # -- means the end of the arguments; drop this, and break out of the while loop
