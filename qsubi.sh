@@ -4,6 +4,7 @@
 DEBUG=0
 CORES=1
 NODE=1
+NAME=STDIN
 QUEUE=shortq
 WALLTIME=24
 
@@ -18,8 +19,8 @@ usage()
 {
 	CYAN '------------------------------  QSUB INTERACTIVE HELP ------------------------------ 
 ---------- PROGRAM		== qsubi (qsub interactive)
----------- VERSION		== 2.0
----------- DATE			== 2020_10_20
+---------- VERSION		== 2.0.1
+---------- DATE			== 2021_10_18
 ---------- CONTACT		== lee.marshall@vai.org
 ---------- DISCRIPTION		== automates creation of PBS interactive job
 ---------- PATH			== export PATH=\$PATH:/path/to/qsubi/directory
@@ -32,6 +33,7 @@ usage()
 ---------- OPTIONS
 	[ -c | --cores <int> ]		== number of cores per job 1 to 80, default 1 core
 	[ -n | --node <node> ]		== name of specific node, default any node
+	[ -N | --name <name> ]		== name specific to job, default STDIN
 	[ -q | --queue <name> ]		== specify queue name, default any queue
 	[ -w | --walltime <int> ]	== number of hours per job 1 to 744, default 24 hours
 
@@ -42,7 +44,7 @@ qsubi -c 4 -q shortq
 }
 
 #---------- Set Arguments
-PARSED_ARGUMENTS=$(getopt -a -n qsubi -o dhc:n:q:w: --long debug,help,cores:,node:,queue:,walltime: -- "$@")
+PARSED_ARGUMENTS=$(getopt -a -n qsubi -o dhc:n:N:q:w: --long debug,help,cores:,node:,name:,queue:,walltime: -- "$@")
 
 VALID_ARGUMENTS=$?
 if [ "$VALID_ARGUMENTS" != "0" ]; then
@@ -57,7 +59,8 @@ do
     -d | --debug)      DEBUG=1         ; shift   ;;
     -h | --help)       usage           ; shift   ;;
     -c | --cores)      CORES="$2"      ; shift 2 ;;
-    -n | --node)       NAME="$2"       ; shift 2 ;;
+    -n | --node)       NODE="$2"       ; shift 2 ;;
+    -N | --name)       NAME="$2"       ; shift 2 ;;
     -q | --queue)      QUEUE="$2"      ; shift 2 ;;
     -w | --walltime)   WALLTIME="$2"   ; shift 2 ;;
     # -- means the end of the arguments; drop this, and break out of the while loop
@@ -111,6 +114,14 @@ else
 	CYAN "---------- NODE == ${NODE} ----------"
 fi
 
+#---------- NAME
+if [ ${NAME} ]
+	then
+	CYAN "---------- JOBNAME == ${NAME} ----------"
+else
+	CYAN "---------- DEFAULT JOBNAME == ${NAME} ----------"
+fi
+
 #---------- QUEUE 
 if [ ${QUEUE} = shortq ]
 	then
@@ -124,8 +135,8 @@ fi
 #---------- QSUB
 if [ ${DEBUG} == 1 ]
 	then 
-	MAGENTA "---------- DEBUG == qsub -I -l nodes=${NODE}:ppn=${CORES} -l walltime=${WALLTIME}:00:00 -q ${QUEUE} -d . -V"
+	MAGENTA "---------- DEBUG == qsub -I -l nodes=${NODE}:ppn=${CORES} -l walltime=${WALLTIME}:00:00 -N ${NAME} -q ${QUEUE} -d . -V"
 	CYAN "------------------------------ QSUB INTERACTIVE ---------------------------LLM"
 else
-	GREEN "---------- JOB == " ; qsub -I -l nodes=${NODE}:ppn=${CORES} -l walltime=${WALLTIME}:00:00 -q ${QUEUE} -d . -V
+	GREEN "---------- JOB == " ; qsub -I -l nodes=${NODE}:ppn=${CORES} -l walltime=${WALLTIME}:00:00 -N ${NAME} -q ${QUEUE} -d . -V
 fi

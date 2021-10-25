@@ -17,8 +17,8 @@ usage()
 {
 	CYAN '------------------------------  QSUB SUBMITTER HELP ------------------------------ 
 ---------- PROGRAM		== qsubs (qsub submitter)
----------- VERSION		== 2.0
----------- DATE			== 2020_10_20
+---------- VERSION		== 2.0.1
+---------- DATE			== 2021_10_18
 ---------- CONTACT		== lee.marshall@vai.org
 ---------- DISCRIPTION		== automates creation and submition of PBS qsub scripts
 ---------- PATH			== export PATH=\$PATH:/path/to/qsubs/directory
@@ -97,7 +97,8 @@ echo '#PBS -l nodes=1:ppn='${CORES}'
 #PBS -N '${NAME}'
 #PBS -q '${QUEUE}'
 #PBS -d .
-#PBS -V'
+#PBS -V
+#PBS -W umask=0022'
 }
 
 SCRIPT_START_ARRAY () {
@@ -118,6 +119,7 @@ echo '
 #- #PBS -m abe == a = aborted email, b = start email, e = end email
 #- #PBS -d . == stay at directory when moving to a node
 #- #PBS -V == head node environment passed to job node environment
+#- #PBS -W umask=0022 == group and others have read permissions
 
 #-------------------- JOB INFO --------------------
 echo -n "---------- START TIME == " ; date +"%Y_%m_%d %H:%M:%S"
