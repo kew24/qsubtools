@@ -19,8 +19,8 @@ usage()
 {
 	CYAN '------------------------------  QSUB INTERACTIVE HELP ------------------------------ 
 ---------- PROGRAM		== qsubi (qsub interactive)
----------- VERSION		== 2.0.1
----------- DATE			== 2021_10_18
+---------- VERSION		== 2.0.2
+---------- DATE			== 2022_01_28
 ---------- CONTACT		== lee.marshall@vai.org
 ---------- DISCRIPTION		== automates creation of PBS interactive job
 ---------- PATH			== export PATH=\$PATH:/path/to/qsubi/directory

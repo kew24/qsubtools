@@ -9,8 +9,8 @@ qsubi automates the submission of creating and activating an interactive node
 ```
 ------------------------------  QSUB INTERACTIVE HELP  
 ---------- PROGRAM		== qsubi (qsub interactive)
----------- VERSION		== 2.0.1
----------- DATE			== 2021_10_18
+---------- VERSION		== 2.0.2
+---------- DATE			== 2022_01_28
 ---------- CONTACT		== lee.marshall@vai.org
 ---------- DISCRIPTION		== automates creation of PBS interactive job
 ---------- PATH			== export PATH=\$PATH:/path/to/qsubi/directory
@@ -37,8 +37,8 @@ qsubs automates the submission of creating and activating of job submissions. qs
 ```
 ------------------------------  QSUB SUBMITTER HELP  
 ---------- PROGRAM		== qsubs (qsub submitter)
----------- VERSION		== 2.0.1
----------- DATE			== 2021_10_18
+---------- VERSION		== 2.0.2
+---------- DATE			== 2022_01_28
 ---------- CONTACT		== lee.marshall@vai.org
 ---------- DISCRIPTION		== automates creation and submition of PBS qsub scripts
 ---------- PATH			== export PATH=\$PATH:/path/to/qsubs/directory
@@ -55,6 +55,8 @@ qsubs automates the submission of creating and activating of job submissions. qs
 	[ -q | --queue <name> ]		== specify queue name, default any queue
 	[ -r | --rscript <"command"> or <file> ]	== command enclosed in double quotes or script file		
 	[ -s | --script <"command"> or <file> ]	== command enclosed in double quotes or script file
+	[ --script_args <args> ]	== positional arguments passed to your bash script file
+	[ -u | --umask <umask>]		== umask value, default 0022 (group read)
 	[ -w | --walltime <int> ]	== number of hours per job 1 to 744, default 24 hours
 -------------------- MULTIPLE COMMANDS 
 ---------- USAGE		== containg multiple compands with double quotes, 
