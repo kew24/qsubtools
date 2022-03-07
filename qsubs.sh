@@ -157,7 +157,7 @@ echo \"---------- SAMPLE SCRIPT == bash ${NAME}_\${PBS_ID}.sh\"
 scp ${SCRIPT} ${NAME}_\${PBS_ID}.sh 
 chmod +x ${NAME}_\${PBS_ID}.sh
 sed -i 's/SAMPLE/'\${PBS_ID}'/g' ${NAME}_\${PBS_ID}.sh
-bash ${NAME}_\${PBS_ID}.sh ${ARGS[@]}"
+bash ${NAME}_\${PBS_ID}.sh $(echo \"${ARGS[@]}\" | sed 's/ /\" \"/')"
 }
 
 SCRIPT_COMMAND () {
