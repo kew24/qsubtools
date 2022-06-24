@@ -2,9 +2,11 @@
 
 #---------- Set Default Values
 DEBUG=0
+NOINFO=0
 CORES=1
 QUEUE=shortq
 WALLTIME=24
+UMASK=0022
 
 #---------- Colors
 RED() { echo "$(tput setaf 1)$*$(tput sgr0)"; }
@@ -17,10 +19,10 @@ usage()
 {
 	CYAN '------------------------------  QSUB SUBMITTER HELP ------------------------------ 
 ---------- PROGRAM		== qsubs (qsub submitter)
----------- VERSION		== 2.0.1
----------- DATE			== 2021_10_18
+---------- VERSION		== 2.0.3
+---------- DATE			== 2022_06_24
 ---------- CONTACT		== lee.marshall@vai.org
----------- DISCRIPTION		== automates creation and submition of PBS qsub scripts
+---------- DESCRIPTION		== automates creation and submition of PBS qsub scripts
 ---------- PATH			== export PATH=\$PATH:/path/to/qsubs/directory
 
 -------------------- COMMANDS --------------------
@@ -28,6 +30,7 @@ usage()
 ---------- FLAGS
 	[ -d | --debug ]		== creates job script but does not execute
 	[ -h | --help ]			== help function
+	[ --no_info ]			== suppress PBS description info on output scripts
 ---------- OPTIONS
 	[ -a | --array <file> ]		== file containing column of sample names for array, 
 						use SAMPLE as variable for sample name in command or script
@@ -36,6 +39,8 @@ usage()
 	[ -q | --queue <name> ]		== specify queue name, default any queue
 	[ -r | --rscript <"command"> or <file> ]	== command enclosed in double quotes or script file		
 	[ -s | --script <"command"> or <file> ]	== command enclosed in double quotes or script file
+	[ --script_args <args> ]	== positional arguments passed to your bash script file
+	[ -u | --umask <umask>]		== umask value, default 0022 (group read)
 	[ -w | --walltime <int> ]	== number of hours per job 1 to 744, default 24 hours
 
 -------------------- MULTIPLE COMMANDS --------------------
@@ -60,7 +65,7 @@ qsubs -n zip_script -a sample_names -s sample_script -d
 }
 
 #---------- Set Arguments
-PARSED_ARGUMENTS=$(getopt -a -n qsubs -o dha:c:n:q:r:s:w: --long debug,help,array:,cores:,name:,queue:,rscript:,script:,walltime: -- "$@")
+PARSED_ARGUMENTS=$(getopt -a -n qsubs -o dha:c:n:q:r:s:u:w: --long debug,help,no_info,array:,cores:,name:,queue:,rscript:,script:,script_args:,umask:,walltime: -- "$@")
 
 VALID_ARGUMENTS=$?
 if [ "$VALID_ARGUMENTS" != "0" ]; then
@@ -74,12 +79,15 @@ do
   case "$1" in
     -d | --debug)      DEBUG=1         ; shift   ;;
     -h | --help)       usage           ; shift   ;;
+	--no_info)         NOINFO=1        ; shift   ;;
     -a | --array)      ARRAY="$2"      ; shift 2 ;;
     -c | --cores)      CORES="$2"      ; shift 2 ;;
     -n | --name)       NAME="$2"       ; shift 2 ;;
     -q | --queue)      QUEUE="$2"      ; shift 2 ;;
     -r | --rscript)    RSCRIPT="$2"    ; shift 2 ;;
     -s | --script)     SCRIPT="$2"     ; shift 2 ;;
+    --script_args)     ARGS+=("$2")    ; shift 2 ;;
+	-u | --umask)      UMASK="$2"      ; shift 2 ;;
     -w | --walltime)   WALLTIME="$2"   ; shift 2 ;;
     # -- means the end of the arguments; drop this, and break out of the while loop
     --) shift; break ;;
@@ -98,7 +106,7 @@ echo '#PBS -l nodes=1:ppn='${CORES}'
 #PBS -q '${QUEUE}'
 #PBS -d .
 #PBS -V
-#PBS -W umask=0022'
+#PBS -W umask='${UMASK}
 }
 
 SCRIPT_START_ARRAY () {
@@ -152,7 +160,7 @@ echo \"---------- SAMPLE SCRIPT == bash ${NAME}_\${PBS_ID}.sh\"
 scp ${SCRIPT} ${NAME}_\${PBS_ID}.sh 
 chmod +x ${NAME}_\${PBS_ID}.sh
 sed -i 's/SAMPLE/'\${PBS_ID}'/g' ${NAME}_\${PBS_ID}.sh
-bash ${NAME}_\${PBS_ID}.sh"
+bash ${NAME}_\${PBS_ID}.sh $(echo \"${ARGS[@]}\" | sed 's/ /\" \"/')"
 }
 
 SCRIPT_COMMAND () {
@@ -210,6 +218,21 @@ else
 	CYAN "---------- QUEUE == ${QUEUE} ----------"
 fi
 
+#---------- UMASK
+if [ ${UMASK} == "0022" ]
+	then
+	CYAN "---------- DEFAULT UMASK == ${UMASK} ----------"
+else
+	if [ ${UMASK} == "0002" ]
+	then
+		CYAN "---------- UMASK == ${UMASK} ----------"
+	else
+		RED "---------- UMASK == ${UMASK} ----------"
+		RED "---------- [[ERROR]] UMASK MUST BE 0022 or 0002 ----------"
+		exit 0
+	fi
+fi
+
 #---------- CORES
 if [ ${CORES} == 1 ]
 	then	
@@ -240,6 +263,12 @@ else
 	fi
 fi
 
+#---------- SCRIPT_ARGS 
+if [ ${ARGS} ]
+	then
+	CYAN "---------- SCRIPT_ARGS == ${ARGS[@]} ----------"
+fi
+
 #---------- ARRAY
 if [[ ( -f "${ARRAY}" && -s "${ARRAY}" ) ]]
 	then
@@ -250,7 +279,10 @@ if [[ ( -f "${ARRAY}" && -s "${ARRAY}" ) ]]
 	#---------- Build JOB
 	SCRIPT_START > ${NAME}.sh
 	SCRIPT_START_ARRAY >> ${NAME}.sh
-	SCRIPT_INFO >> ${NAME}.sh
+	if [ ${NOINFO} != 1 ]
+	then
+		SCRIPT_INFO >> ${NAME}.sh
+	fi
 	SCRIPT_ARRAY >> ${NAME}.sh
 	#---------- SCRIPT + RSCRIPT
 	if [ -n "${SCRIPT}" ] 
@@ -286,7 +318,10 @@ else
 	CYAN "---------- DEFAULT ARRAY == NO ARRAY ----------"
 	#---------- Build JOB
 	SCRIPT_START > ${NAME}.sh
-	SCRIPT_INFO >> ${NAME}.sh
+	if [ ${NOINFO} != 1 ]
+	then
+		SCRIPT_INFO >> ${NAME}.sh
+	fi
 	#---------- SCRIPT + RSCRIPT
 	if [ -n "${SCRIPT}" ] 
 		then
