@@ -2,6 +2,7 @@
 
 #---------- Set Default Values
 DEBUG=0
+NOINFO=0
 CORES=1
 QUEUE=shortq
 WALLTIME=24
@@ -29,6 +30,7 @@ usage()
 ---------- FLAGS
 	[ -d | --debug ]		== creates job script but does not execute
 	[ -h | --help ]			== help function
+	[ --no_info ]			== suppress PBS description info on output scripts
 ---------- OPTIONS
 	[ -a | --array <file> ]		== file containing column of sample names for array, 
 						use SAMPLE as variable for sample name in command or script
@@ -63,7 +65,7 @@ qsubs -n zip_script -a sample_names -s sample_script -d
 }
 
 #---------- Set Arguments
-PARSED_ARGUMENTS=$(getopt -a -n qsubs -o dha:c:n:q:r:s:u:w: --long debug,help,array:,cores:,name:,queue:,rscript:,script:,script_args:,umask:,walltime: -- "$@")
+PARSED_ARGUMENTS=$(getopt -a -n qsubs -o dha:c:n:q:r:s:u:w: --long debug,help,no_info,array:,cores:,name:,queue:,rscript:,script:,script_args:,umask:,walltime: -- "$@")
 
 VALID_ARGUMENTS=$?
 if [ "$VALID_ARGUMENTS" != "0" ]; then
@@ -77,6 +79,7 @@ do
   case "$1" in
     -d | --debug)      DEBUG=1         ; shift   ;;
     -h | --help)       usage           ; shift   ;;
+	--no_info)         NOINFO=1        ; shift   ;;
     -a | --array)      ARRAY="$2"      ; shift 2 ;;
     -c | --cores)      CORES="$2"      ; shift 2 ;;
     -n | --name)       NAME="$2"       ; shift 2 ;;
@@ -276,7 +279,10 @@ if [[ ( -f "${ARRAY}" && -s "${ARRAY}" ) ]]
 	#---------- Build JOB
 	SCRIPT_START > ${NAME}.sh
 	SCRIPT_START_ARRAY >> ${NAME}.sh
-	SCRIPT_INFO >> ${NAME}.sh
+	if [ ${NOINFO} != 1 ]
+	then
+		SCRIPT_INFO >> ${NAME}.sh
+	fi
 	SCRIPT_ARRAY >> ${NAME}.sh
 	#---------- SCRIPT + RSCRIPT
 	if [ -n "${SCRIPT}" ] 
@@ -312,7 +318,10 @@ else
 	CYAN "---------- DEFAULT ARRAY == NO ARRAY ----------"
 	#---------- Build JOB
 	SCRIPT_START > ${NAME}.sh
-	SCRIPT_INFO >> ${NAME}.sh
+	if [ ${NOINFO} != 1 ]
+	then
+		SCRIPT_INFO >> ${NAME}.sh
+	fi
 	#---------- SCRIPT + RSCRIPT
 	if [ -n "${SCRIPT}" ] 
 		then
