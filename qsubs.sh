@@ -19,10 +19,10 @@ usage()
 {
 	CYAN '------------------------------  QSUB SUBMITTER HELP ------------------------------ 
 ---------- PROGRAM		== qsubs (qsub submitter)
----------- VERSION		== 2.0.2
----------- DATE			== 2022_01_28
+---------- VERSION		== 2.0.3
+---------- DATE			== 2022_06_24
 ---------- CONTACT		== lee.marshall@vai.org
----------- DISCRIPTION		== automates creation and submition of PBS qsub scripts
+---------- DESCRIPTION		== automates creation and submition of PBS qsub scripts
 ---------- PATH			== export PATH=\$PATH:/path/to/qsubs/directory
 
 -------------------- COMMANDS --------------------
